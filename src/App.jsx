@@ -1,28 +1,71 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
+import LoginForm from './components/LoginForm';
+import ChoiceDialog from './components/ChoiceDialog';
+import DataForm from './components/DataForm';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [authed, setAuthed] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [mode, setMode] = useState(null); // 'google' | 'msme'
+
+  const handleLoginSuccess = () => {
+    setAuthed(true);
+    setShowDialog(true);
+  };
+
+  const handleChoose = (key) => {
+    setMode(key);
+    setShowDialog(false);
+  };
+
+  if (!authed) return <LoginForm onSuccess={handleLoginSuccess} />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <header className="sticky top-0 z-40 bg-slate-950/70 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 border-b border-slate-800">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-emerald-500" />
+            <span className="font-semibold text-lg">SellerKhoj</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <button
+              className="px-3 py-1.5 rounded-md bg-slate-800 border border-slate-700 hover:bg-slate-700"
+              onClick={() => setShowDialog(true)}
+            >
+              New Task
+            </button>
+            {mode && (
+              <span className="text-slate-400">Mode: {mode === 'google' ? 'Google Places' : 'MSME Sellers'}</span>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
-  )
-}
+      </header>
 
-export default App
+      {!mode ? (
+        <div className="max-w-5xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <h1 className="text-4xl font-semibold">Find and export leads in minutes</h1>
+            <p className="text-slate-400 mt-2">Choose a data source to begin</p>
+            <button
+              onClick={() => setShowDialog(true)}
+              className="mt-6 px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg"
+            >
+              Get Started
+            </button>
+          </div>
+        </div>
+      ) : (
+        <main>
+          <DataForm mode={mode} />
+        </main>
+      )}
+
+      <ChoiceDialog
+        open={showDialog}
+        onChoose={handleChoose}
+        onClose={() => setShowDialog(false)}
+      />
+    </div>
+  );
+}
